@@ -12,39 +12,46 @@ class OpenAICompatibleClient(LLMClient):
     # Default configurations for different providers
     PROVIDER_CONFIGS = {
         'openai': {
-            'base_url': None,  # Use default OpenAI URL
-            'env_key': 'OPENAI_API_KEY',  # Name of the environment variable
+            'base_url': 'https://api.openai.com/v1',
+            'env_var': 'OPENAI_API_KEY',
             'default_model': 'gpt-3.5-turbo',
             'name_prefix': 'OpenAI',
             'ping_endpoint': '/v1/models'  # Endpoint to use for ping test
         },
         'fireworks': {
             'base_url': 'https://api.fireworks.ai/inference/v1',
-            'env_key': 'FIREWORKS_API_KEY',
+            'env_var': 'FIREWORKS_API_KEY',
             'default_model': 'accounts/fireworks/models/llama4-maverick-instruct-basic',
             'name_prefix': 'Fireworks',
             'ping_endpoint': '/models'  # Endpoint to use for ping test
         },
         'baseten': {
-            'base_url': 'https://api.baseten.co/v1',
-            'env_key': 'BASETEN_API_KEY',
+            'base_url': "https://inference.baseten.co/v1",
+            'env_var': 'BASETEN_API_KEY',
             'default_model': 'baseten/baseten-llama-3-8b-instruct',
             'name_prefix': 'Baseten',
             'ping_endpoint': '/models'  # Endpoint to use for ping test
         },
         'together': {
             'base_url': 'https://api.together.xyz/v1',
-            'env_key': 'TOGETHER_API_KEY',
+            'env_var': 'TOGETHER_API_KEY',
             'default_model': 'mistralai/Mixtral-8x7B-Instruct-v0.1',
             'name_prefix': 'Together',
             'ping_endpoint': '/models'  # Endpoint to use for ping test
         },
         'anthropic': {
             'base_url': 'https://api.anthropic.com/v1',
-            'env_key': 'ANTHROPIC_API_KEY',
+            'env_var': 'ANTHROPIC_API_KEY',
+            'is_anthropic': True,
             'default_model': 'claude-3-opus-20240229',
             'name_prefix': 'Anthropic',
             'ping_endpoint': '/models'  # Endpoint to use for ping test
+        },
+        'predibase': {
+            'base_url': 'https://api.predibase.com/v1',
+            'env_var': 'PREDIBASE_API_KEY',
+            'default_model': 'predibase/llama-4-maverick',
+            'name_prefix': 'Predibase',
         }
     }
     
@@ -123,10 +130,10 @@ class OpenAICompatibleClient(LLMClient):
         """Initialize the client with the appropriate configuration"""
         # Get API key from environment if not provided
         if not self.api_key:
-            env_key_name = self.config['env_key']
-            self.api_key = os.environ.get(env_key_name)
+            env_var_name = self.config['env_var']
+            self.api_key = os.environ.get(env_var_name)
             if not self.api_key:
-                raise ValueError(f"{env_key_name} environment variable not set")
+                raise ValueError(f"{env_var_name} environment variable not set")
         
         # Initialize OpenAI client with appropriate base URL
         client_kwargs = {'api_key': self.api_key}
